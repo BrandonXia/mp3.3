@@ -163,27 +163,45 @@ int32_t execute(const uint8_t* command)
     tss.esp0 = curr_process_ptr -> tss_esp0 ;
     tss.ss0 = KERNEL_DS ;
     /*store info defined in x86_desc.h into the prepared varible for later use*/
-    uint32_t uDS;
-    uint32_t uESP;
-    uint32_t uCS;
-    uDS = USER_DS;
-    uESP = USER_MEM + USER_STACK_SIZE - 4 ; // 4 is the stack_fence
-    uCS = USER_CS;
-    uint32_t eiptr = *(uint32_t*) ( (uint8_t*) USER_PADDR + 24 )  // 24 is the offset for EIP
+    // uint32_t uESP;
+    // uESP = USER_MEM + USER_STACK_SIZE - 4 ; // 4 is the stack_fence
+    // uint32_t eiptr = *(uint32_t*) ( (uint8_t*) USER_PADDR + 24 )  // 24 is the offset for EIP
     sti();
     /* context switch*/
     asm volatile(
-        "movw  %%ax, %%ds;"
-        "pushl %%eax;"
-        "pushl %%ebx;"
-        "pushfl  ;"
-        "pushl %%ecx;"
-        "pushl %%edx;"
-        "IRET"
-        :
-        : "a"(uDS), "b"(uESP), "c"(uCS), "d"(eiptr)
-        : "cc", "memory"
+        // "movw  %%ax, %%ds;"
+        // "pushl %%eax;"
+        // "pushl %%ebx;"
+        // "pushfl  ;"
+        // "pushl %%ecx;"
+        // "pushl %%edx;"
+        // "IRET"
+        // :
+        // : "a"(USER_DS), "b"(uESP), "c"(USER_CS), "d"(eiptr)
+        // : "cc", "memory"
+        "movl 4(%esp), %ebx;" // 4 is for shift 1 memory location
+        "xorl %edx, %edx;"
+        "movw $0x002B, %dx;"// which is USER_DS
+        "pushl %edx;"
+        "movl $0x83ffffc, %edx;" // which is user_stack = USER_MEM + USER_STACK_SIZE - 4
+        "pushl %edx;"
+        /* push flags */
+        "pushfl;"
+        /*push if_falg*/
+        "xorl %edx, %edx;"
+        "popl  %edx;"
+        "orl $0x200, %edx;" // which is if_flag
+        "pushl %edx;"
+        /*push user_cs*/
+        "xorl %edx, %edx;"
+        "movw $0x0023, %dx;"
+        "pushl %edx;"
+        /* push EIP, entrypoint */
+        "pushl %ebx;"
+        "iret"
     );
+    // actually never
+    return 1;
 }
 
 int32_t getargs(uint8_t* buf, int32_t n){     
