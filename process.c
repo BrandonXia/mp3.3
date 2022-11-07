@@ -243,8 +243,20 @@ int32_t read(uint32_t offset, void* buf, int32_t n){
     int32_t ifread;
     ifread = file_array[offset].fileot_pointer->read;
     if(ifread == 0){ return -1; } //doesn't support read function
-    /* now we can read file by the position into the buf*/
-    return file_array[offset].fileot_pointer->read(offset, file_array[offset].position, buf, n); // file system here
+    /* now we can read file by the position into the buf*/ 
+    dentry_t* tem_dentry;
+    int32_t tem_inode = file_array[offset].inode;
+    uint8_t tem_name;
+    for(int length = 0; length < 63; length ++)
+    {
+        read_dentry_by_index(length, tem_dentry);
+        if (tem_dentry->inode_index == tem_inode)
+        {
+            tem_name = tem_dentry->file_name;
+        }   
+    } 
+    // 63 is the max number of the file list
+    return file_array[offset].fileot_pointer->read(tem_name, file_array[offset].position, buf, n); // file system here
 }
 
 /*
