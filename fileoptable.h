@@ -7,10 +7,10 @@
 #include "types.h"
 #define num_entries_for_fot 4
 typedef struct fileot{
-    int32_t (*open)     (const uint8_t* filename);
+    int32_t (*open)     (const char* filename);
     int32_t (*close)    (const char* fname);
     int32_t (*read)     (const char* fname, uint32_t offset, void* buf, int32_t nbytes);
-    int32_t (*write)    (void);
+    int32_t (*write)    (int32_t fd, const void* buf, int32_t nbytes);
 } fileot;
 // file descriptor array
 
@@ -34,7 +34,7 @@ int rtcclose(const char* fname);
 /* Read file. 1 on success, -1 on failure*/
 int rtcread(const char* fname, uint32_t offset, void* buf, int32_t length);
 /* Write to file. Always failure*/
-int rtcwrite();
+int rtcwrite(int32_t fd, const void* buf, int32_t nbytes);
 /* Open  directory. 1 on success, -1 on failure*/
 
 

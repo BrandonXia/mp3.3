@@ -3,6 +3,6 @@
 #include    "process.h"
 
 #ifndef ASM
-extern void system_call();
+extern void systemcall();
 #endif
 #endif

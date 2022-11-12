@@ -108,7 +108,7 @@ int rtcread(const char* fname, uint32_t offset, void* buf, int32_t length)
     Output: nan
     Return value: always failure. Can't write to read-only files
 */
-int rtcwrite()
+int rtcwrite(int32_t fd, const void* buf, int32_t nbytes)
 {
     rtc_write(2);
     return 0;

@@ -1,6 +1,6 @@
 #define ASM 1
-.global system_call
-system_call:
+.global systemcall,done,invalid,sysJumpTable
+systemcall:
     pushl   %esi
     pushl   %edi
     pushl   %esp
@@ -22,6 +22,7 @@ done:
     popl %edi
     popl %esi    
     iret
+    
 invalid:
     movl    $-1, %eax
     jmp done
@@ -38,4 +39,5 @@ sysJumpTable:
     .long   vidmap
     .long   set_handler
     .long   sigreturn
+
 
